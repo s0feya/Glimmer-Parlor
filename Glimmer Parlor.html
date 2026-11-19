@@ -1,0 +1,446 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Glimmer Parlor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Josefin+Sans:wght@300;400;600&family=Monsieur+La+Doulaise&display=swap">
+
+<style>
+/* Layout: the parlor title over a 2x2 grid of game cards (one column on phones); each card has
+   a tiny live-looking preview of its game, the name in script, one line, and a Play pill. */
+:root {
+  color-scheme: light;
+  --ground: #c9156d;
+  --blush: #fff0f7;
+  --petal: #ffc2df;
+  --pink: #ff6fb5;
+  --rose: #e6338a;
+  --berry: #7a1f5c;
+  --lilac: #b7a6ff;
+  --gold: #e9b949;
+  --ink: #5a1847;
+  --muted: #a3628f;
+  --font-script: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --font-title: "Monsieur La Doulaise", "Snell Roundhand", "Edwardian Script ITC", cursive;
+  --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --font-body: "Josefin Sans", "Futura", "Avenir Next", system-ui, sans-serif;
+  --font-ui: "Josefin Sans", "Futura", "Avenir Next", system-ui, sans-serif;
+  --glitter: none;
+}
+* { box-sizing: border-box; }
+html { background: var(--ground); }
+body {
+  color: var(--ink); font-family: var(--font-body); font-weight: 400; font-size: 15px; letter-spacing: .02em; line-height: 1.5;
+  background-color: var(--ground);
+  background-image: radial-gradient(1000px 700px at 50% 20%, #e5358b, #c9156d 70%);
+  background-attachment: fixed;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 56px 56px;
+  overflow-x: hidden;
+}
+#glitter { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+#burst { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+
+/* Card trimmed in a band of rhinestones */
+.lace {
+  position: relative; z-index: 1; max-width: 580px; margin: 0 auto;
+  padding: 14px; border-radius: 40px;
+  background:
+    radial-gradient(circle at 40% 40%, #fff 0 1.4px, transparent 1.8px),
+    radial-gradient(circle, #ffe6f3 0 4px, #ff8fc6 4.6px 5.4px, transparent 6px),
+    linear-gradient(135deg, #ff5fae, #e6338a);
+  background-size: 14px 14px, 14px 14px, auto;
+  background-position: 0 0, 0 0, 0 0;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px #ff8fc6, 0 0 36px rgba(255,255,255,.55), 0 24px 50px rgba(90, 0, 50, .45);
+}
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,.97) 0%, rgba(255,240,247,.97) 100%);
+  border-radius: 28px;
+  box-shadow: 0 0 0 2px #fff, inset 0 0 0 2px var(--petal);
+  padding: 36px 26px 30px;
+  display: flex; flex-direction: column; gap: 20px;
+  position: relative;
+}
+
+header { text-align: center; display: grid; gap: 2px; }
+h1 {
+  margin: 6px 0 0; padding: .12em .2em .18em; font-family: var(--font-title); font-style: normal; font-weight: 400; line-height: 1;
+  font-size: clamp(58px, 15vw, 104px); letter-spacing: 0; text-wrap: balance;
+  color: var(--rose);
+  background-image: var(--glitter), linear-gradient(100deg, var(--rose), var(--pink) 45%, #ff9fcf 55%, var(--rose));
+  background-size: 160px 160px, 100% 100%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: glint-text 5s linear infinite;
+  filter: drop-shadow(0 2px 0 #fff) drop-shadow(0 0 1px rgba(122,31,92,.35));
+}
+@keyframes glint-text { to { background-position: 160px 160px, 0 0; } }
+.divider { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--pink); font-size: 14px; }
+.divider::before, .divider::after { content: ""; flex: 0 1 90px; height: 6px;
+  background: radial-gradient(circle, var(--pink) 1.6px, transparent 2px) 0 50% / 8px 6px repeat-x; }
+.tag { margin: 0 auto; max-width: 42ch; color: var(--muted); font-size: 14px; text-align: center; }
+
+.btns { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+button {
+  font: 400 12px var(--font-ui); text-transform: uppercase; letter-spacing: .22em; cursor: pointer; border-radius: 999px; padding: 10px 18px 8px;
+  color: var(--berry); background: #fff; border: 2px solid var(--petal);
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--petal);
+  transition: transform .15s, border-color .15s, box-shadow .15s;
+}
+button:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--pink); box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--pink); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--lilac); outline-offset: 4px; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.msg { min-height: 22px; text-align: center; font-size: 14px; color: var(--rose); margin-top: -8px; }
+.msg.err { color: #c0174f; }
+.banner { background: #fff; border: 2px dashed var(--rose); color: var(--berry); border-radius: 16px; padding: 12px 16px; font-size: 14px; text-align: center; }
+.confirm { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 14px; color: var(--berry); }
+.confirm .danger { border-color: var(--rose); color: var(--rose); }
+.win {
+  border-radius: 22px; padding: 20px; text-align: center; display: grid; gap: 6px;
+  background: linear-gradient(135deg, #fffaf0, #ffe9f5); border: 2px dashed var(--gold);
+  box-shadow: 0 0 0 6px #fff, 0 0 0 8px var(--gold);
+}
+.win h2 { font-family: var(--font-script); font-style: italic; font-weight: 400; font-size: 38px; line-height: 1.05; margin: 0; color: var(--rose); }
+.win p { margin: 0; color: var(--muted); }
+@media (max-width: 480px) {
+  .lace { padding: 10px; border-radius: 32px; }
+  .card { padding: 28px 14px 22px; border-radius: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { h1 { animation: none; } }
+
+/* Link back to the parlor */
+.home {
+  position: absolute; top: 14px; left: 16px; z-index: 2;
+  font: 400 10px var(--font-ui); letter-spacing: .26em; text-transform: uppercase; text-decoration: none;
+  color: var(--rose); padding: 6px 10px 4px; border-radius: 999px; border: 1.5px solid var(--petal); background: #fff;
+}
+.home:hover { border-color: var(--pink); }
+.home:focus-visible { outline: 3px solid var(--lilac); outline-offset: 3px; }
+.cta {
+  color: #fff; border: 2px solid #fff; font-weight: 600;
+  background-image: var(--glitter), linear-gradient(135deg, var(--pink), var(--rose));
+  background-size: 100px 100px, 100% 100%;
+  box-shadow: 0 0 0 2px var(--rose), 0 6px 16px rgba(230,51,138,.35);
+  text-shadow: 0 1px 2px rgba(122,31,92,.5);
+}
+.cta:hover:not(:disabled) { box-shadow: 0 0 0 2px var(--rose), 0 8px 20px rgba(230,51,138,.45); }
+
+/* Magic wand pointer (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  html, body, *, *::before, *::after { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%0A%3Cdefs%3E%0A%3ClinearGradient id='rg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fbe0d4'/%3E%3Cstop offset='.45' stop-color='%23e2a08c'/%3E%3Cstop offset='1' stop-color='%23b06a58'/%3E%3C/linearGradient%3E%0A%3CradialGradient id='gem' cx='.35' cy='.3' r='.85'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='.4' stop-color='%23ffb6d2'/%3E%3Cstop offset='1' stop-color='%23e8558f'/%3E%3C/radialGradient%3E%0A%3ClinearGradient id='quartz' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ffe3ec'/%3E%3Cstop offset='.5' stop-color='%23f7b3c8'/%3E%3Cstop offset='1' stop-color='%23e98fab'/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cg transform='translate%2825 26%29 rotate%28-45%29 scale%28.84%29 translate%28-10 -31%29'%3E%0A  %3Cmask id='moon'%3E%3Crect x='-5' y='-5' width='30' height='40' fill='white'/%3E%3Ccircle cx='13.2' cy='8.2' r='7.1' fill='black'/%3E%3C/mask%3E%0A  %3Crect x='7.4' y='27.5' width='5.2' height='29.5' rx='2.2' fill='%23ffffff'/%3E%0A  %3Crect x='7.8' y='27.5' width='4.4' height='29.5' rx='2' fill='url%28%23quartz%29' stroke='%23e7a7b7' stroke-width='.3'/%3E%0A  %3Crect x='8.6' y='29' width='.8' height='26.5' rx='.4' fill='%23ffffff' opacity='.75'/%3E%0A  %3Crect x='7.5' y='37' width='5' height='1.5' rx='.5' fill='url%28%23rg%29'/%3E%0A  %3Ccircle cx='9' cy='37.75' r='.35' fill='%237e9bd6'/%3E%3Ccircle cx='10' cy='37.75' r='.4' fill='%23ff6fa8'/%3E%3Ccircle cx='11' cy='37.75' r='.35' fill='%237e9bd6'/%3E%0A  %3Cpath d='M10 48.6 L10.6 50.2 L12 50.8 L10.6 51.4 L10 53 L9.4 51.4 L8 50.8 L9.4 50.2 Z' fill='url%28%23rg%29'/%3E%0A  %3Cpath d='M7.4 56.6 Q10 55.6 12.6 56.6 L12.2 60.4 Q10 61.6 7.8 60.4 Z' fill='url%28%23rg%29' stroke='%23a8604f' stroke-width='.3'/%3E%0A  %3Cpath d='M8 57.6 c-.9 .6 -.6 1.8 .4 1.6 M12 57.6 c.9 .6 .6 1.8 -.4 1.6' fill='none' stroke='%23f7d6c8' stroke-width='.35'/%3E%0A  %3Ccircle cx='10' cy='58.4' r='.75' fill='%237eb3e6' stroke='%23ffffff' stroke-width='.2'/%3E%0A  %3Cpath d='M8.6 60.8 L11.4 60.8 L11 62.8 Q10 63.8 9 62.8 Z' fill='url%28%23rg%29'/%3E%0A  %3Cpath d='M6.2 25.6 Q10 24.4 13.8 25.6 L12.8 28 Q10 29 7.2 28 Z' fill='url%28%23rg%29' stroke='%23a8604f' stroke-width='.3'/%3E%0A  %3Ccircle cx='8.2' cy='26.7' r='.4' fill='%237e9bd6'/%3E%3Ccircle cx='11.8' cy='26.7' r='.4' fill='%237e9bd6'/%3E%0A  %3Cpath d='M6 21.6 C3.6 21 3 24 5.2 24.4 C6.6 24.6 6.8 23 5.8 22.8 M14 21.6 C16.4 21 17 24 14.8 24.4 C13.4 24.6 13.2 23 14.2 22.8' fill='none' stroke='url%28%23rg%29' stroke-width='1' stroke-linecap='round'/%3E%0A  %3Cpath d='M7.4 19.6 Q10 18.6 12.6 19.6 L11.8 25.4 L8.2 25.4 Z' fill='url%28%23rg%29' stroke='%23a8604f' stroke-width='.3'/%3E%0A  %3Ccircle cx='10' cy='22.3' r='1.75' fill='url%28%23gem%29' stroke='%23f7d6c8' stroke-width='.4'/%3E%0A  %3Ccircle cx='9.4' cy='21.7' r='.45' fill='%23ffffff' opacity='.9'/%3E%0A  %3Ccircle cx='10' cy='11' r='8.6' fill='url%28%23rg%29' stroke='%23a8604f' stroke-width='.35' mask='url%28%23moon%29'/%3E%0A  %3Cpath d='M3.6 15.8 C2.6 13.6 2.4 10.6 3.4 8.2' fill='none' stroke='%235f7fc4' stroke-width='.6' stroke-dasharray='.5 .45' mask='url%28%23moon%29'/%3E%0A  %3Ccircle cx='2.9' cy='10.8' r='.95' fill='url%28%23gem%29' stroke='%23f7d6c8' stroke-width='.25'/%3E%0A  %3Ccircle cx='4.6' cy='16.4' r='.9' fill='url%28%23gem%29' stroke='%23f7d6c8' stroke-width='.25'/%3E%0A  %3Ccircle cx='3.4' cy='6.2' r='.6' fill='%237e9bd6'/%3E%3Ccircle cx='7.6' cy='19' r='.55' fill='%237e9bd6'/%3E%0A  %3Ccircle cx='10.4' cy='19.4' r='1' fill='url%28%23gem%29' stroke='%23f7d6c8' stroke-width='.25'/%3E%0A  %3Cpath d='M12.6 18.8 Q15.4 21.6 18 18.4' fill='none' stroke='%23e8a0a8' stroke-width='.35' stroke-dasharray='.35 .3'/%3E%0A  %3Cline x1='16.2' y1='19.6' x2='16.2' y2='21.2' stroke='%23e8a0a8' stroke-width='.3'/%3E%0A  %3Ccircle cx='16.2' cy='22.1' r='1' fill='url%28%23gem%29' stroke='%23f7d6c8' stroke-width='.25'/%3E%0A  %3Cline x1='14.6' y1='5.4' x2='16' y2='3.6' stroke='url%28%23rg%29' stroke-width='.6'/%3E%0A  %3Cpath d='M11.40 4.90 L12.75 7.26 L15.47 7.25 L14.10 9.60 L15.47 11.95 L12.75 11.94 L11.40 14.30 L10.05 11.94 L7.33 11.95 L8.70 9.60 L7.33 7.25 L10.05 7.26 Z' fill='url%28%23gem%29' stroke='%23c97a6a' stroke-width='.45' stroke-linejoin='round'/%3E%0A  %3Cpath d='M11.4 9.6 L11.40 4.90 M11.4 9.6 L15.47 7.25 M11.4 9.6 L15.47 11.95 M11.4 9.6 L11.40 14.30 M11.4 9.6 L7.33 11.95 M11.4 9.6 L7.33 7.25 ' stroke='%23ffffff' stroke-width='.3' opacity='.7' fill='none'/%3E%0A  %3Cpath d='M10.2 7.8 l.35 .95 l.95 .35 l-.95 .35 l-.35 .95 l-.35 -.95 l-.95 -.35 l.95 -.35 Z' fill='%23ffffff'/%3E%0A  %3Cpath d='M17.20 0.10 L17.82 1.35 L19.20 1.55 L18.20 2.52 L18.43 3.90 L17.20 3.25 L15.97 3.90 L16.20 2.52 L15.20 1.55 L16.58 1.35 Z' fill='url%28%23gem%29' stroke='%23c97a6a' stroke-width='.35' stroke-linejoin='round'/%3E%0A  %3Ccircle cx='17.2' cy='-.4' r='.55' fill='none' stroke='url%28%23rg%29' stroke-width='.35'/%3E%0A%3C/g%3E%0A%3Cg fill='%23ffd1e6'%3E%0A  %3Cpath d='M24 5 l.6 1.6 l1.6 .6 l-1.6 .6 l-.6 1.6 l-.6 -1.6 l-1.6 -.6 l1.6 -.6 Z' fill='%23fff1c2'/%3E%0A  %3Cpath d='M5 22 l.45 1.2 l1.2 .45 l-1.2 .45 l-.45 1.2 l-.45 -1.2 l-1.2 -.45 l1.2 -.45 Z'/%3E%0A  %3Ccircle cx='20' cy='13' r='.7'/%3E%3Ccircle cx='27' cy='11' r='.5' fill='%23fff1c2'/%3E%3Ccircle cx='12' cy='22' r='.5'/%3E%0A%3C/g%3E%0A%3C/svg%3E") 12 11, auto !important; }
+  input[type="text"], textarea { cursor: text !important; }
+}
+
+/* ---------- Difficulty: stars hanging from the ceiling ---------- */
+.pick-label { text-align: center; margin-bottom: -10px; }
+.ceiling { position: relative; display: flex; justify-content: center; align-items: flex-start; gap: clamp(26px, 10vw, 70px); padding-top: 4px; min-height: 124px; }
+.ceiling::before {
+  content: ""; position: absolute; top: 0; left: 4%; right: 4%; height: 8px; border-radius: 999px;
+  background: radial-gradient(circle, #fff 0 1.7px, transparent 2.1px) 0 50% / 12px 8px repeat-x, linear-gradient(90deg, var(--petal), var(--pink), var(--petal));
+  box-shadow: 0 2px 6px rgba(230,51,138,.25);
+}
+.ceiling .hang {
+  position: relative; display: flex; flex-direction: column; align-items: center; padding: 0; margin-top: 6px;
+  background: none !important; border: none !important; box-shadow: none !important; border-radius: 0;
+  text-transform: none; letter-spacing: normal; transform-origin: 50% 0; animation: sway 4.2s ease-in-out infinite;
+}
+.hang .string { width: 1.5px; height: var(--len); background: linear-gradient(var(--gold), var(--petal)); }
+.hang .hstar { width: 42px; height: 42px; margin-top: -3px; transition: transform .35s cubic-bezier(.3,1.6,.5,1), filter .35s; overflow: visible; }
+.hang .hstar .body { fill: #ffe6f2; stroke: #ff8fc6; stroke-width: 1.6; stroke-linejoin: round; transition: fill .35s, stroke .35s; }
+.hang .hstar .facet { fill: none; stroke: #fff; stroke-width: 1; opacity: .85; }
+.hang .name { margin-top: 5px; font: 600 11px var(--font-ui); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.hang .pips { font-size: 9px; letter-spacing: 2px; color: var(--petal); line-height: 1.4; }
+.hang:hover .hstar { transform: scale(1.08) rotate(-8deg); }
+.hang.on .hstar { transform: scale(1.24); filter: drop-shadow(0 0 6px rgba(255,214,110,.95)) drop-shadow(0 0 14px rgba(255,111,181,.6)); }
+.hang.on .hstar .body { fill: #f7cf63; stroke: #e6338a; }
+.hang.on .name { color: var(--rose); }
+.hang.on .pips { color: var(--gold); }
+.ceiling .hang.tug { animation: tug .75s cubic-bezier(.3,1.5,.5,1), sway 4.2s ease-in-out .75s infinite; }
+.hang:focus-visible { outline: 3px solid var(--lilac); outline-offset: 4px; }
+@keyframes sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes tug { 0% { transform: translateY(0); } 30% { transform: translateY(12px); } 100% { transform: translateY(0); } }
+.lvl-note { margin: -10px auto 0; text-align: center; font-size: 13px; color: var(--berry); max-width: 46ch; min-height: 1.5em; }
+@media (prefers-reduced-motion: reduce) { .ceiling .hang, .ceiling .hang.tug { animation: none; } }
+
+.lace { max-width: 860px; }
+.card { gap: 26px; }
+h1 { font-size: clamp(64px, 17vw, 128px); }
+.games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.game {
+  display: grid; gap: 10px; align-content: start; text-decoration: none; color: inherit;
+  padding: 18px 18px 20px; border-radius: 24px; background: #fff;
+  border: 2px dashed var(--petal); box-shadow: 0 0 0 6px #fff, 0 0 0 8px var(--petal);
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.game:hover { transform: translateY(-3px); border-color: var(--pink); box-shadow: 0 0 0 6px #fff, 0 0 0 8px var(--pink), 0 14px 30px rgba(122,31,92,.18); }
+.game:focus-visible { outline: 3px solid var(--lilac); outline-offset: 10px; }
+.game h2 { margin: 0; font-family: var(--font-title); font-weight: 400; font-size: 46px; line-height: 1.1; color: var(--rose); padding: 0 .1em; }
+.game p { margin: 0; font-size: 14px; color: var(--muted); min-height: 3em; }
+.game .kind { font: 400 10px var(--font-ui); letter-spacing: .28em; text-transform: uppercase; color: var(--muted); }
+.play { justify-self: start; font: 600 11px var(--font-ui); letter-spacing: .24em; text-transform: uppercase; padding: 9px 16px 7px; border-radius: 999px; }
+.preview { height: 96px; border-radius: 16px; background: radial-gradient(circle at 50% 0%, #fff, #ffe7f3 80%); display: grid; place-items: center; overflow: hidden; }
+
+/* Previews */
+.pv-meter { width: 80%; display: grid; gap: 6px; text-align: center; }
+.pv-meter b { font: 400 30px var(--font-display); color: var(--rose); line-height: 1; }
+.pv-meter .bar { height: 12px; border-radius: 999px; background: #fff; border: 2px solid var(--petal); overflow: hidden; }
+.pv-meter .bar i { display: block; height: 100%; width: 78%; background-image: var(--glitter), linear-gradient(90deg, var(--lilac), var(--pink), var(--rose)); background-size: 80px 80px, 100% 100%; }
+.pv-tiles { display: flex; gap: 6px; }
+.pv-tiles span { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; font: 500 18px var(--font-display); text-transform: uppercase; color: #fff; }
+.g { background-image: var(--glitter), linear-gradient(135deg, #fff1c2, var(--gold) 55%, #c9952e); background-size: 60px 60px, 100% 100%; color: #5a3a00 !important; }
+.p { background-image: var(--glitter), linear-gradient(135deg, var(--pink), var(--rose)); background-size: 60px 60px, 100% 100%; }
+.n { background: #c7aabb; }
+.pv-grid { position: relative; display: grid; grid-template-columns: repeat(7, 18px); gap: 1px; font: 500 13px var(--font-display); color: var(--berry); text-transform: uppercase; text-align: center; }
+.pv-grid::before { content: ""; position: absolute; left: 0; top: 20px; width: 75px; height: 16px; border-radius: 999px; background: rgba(255,111,181,.5); }
+.pv-grid::after { content: ""; position: absolute; left: 76px; top: 0; width: 16px; height: 75px; border-radius: 999px; background: rgba(183,166,255,.55); }
+.pv-grid span { position: relative; z-index: 1; }
+.pv-cards { position: relative; width: 150px; height: 80px; }
+.pv-cards span { position: absolute; top: 8px; width: 54px; height: 68px; border-radius: 9px; display: grid; place-items: start center; padding-top: 8px; font: 500 12px var(--font-display); color: var(--berry); background: #fff; border: 1.5px solid var(--petal); box-shadow: 0 3px 8px rgba(122,31,92,.15); }
+.pv-cards span:nth-child(1) { left: 6px; transform: rotate(-12deg); }
+.pv-cards span:nth-child(2) { left: 48px; transform: rotate(-2deg); top: 2px; color: #5a3a00; border: 2px solid #fff; font-style: italic; }
+.pv-cards span:nth-child(3) { left: 90px; transform: rotate(10deg); }
+.foot { text-align: center; font-size: 12px; letter-spacing: .14em; color: var(--muted); }
+@media (max-width: 620px) { .games { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .game { transition: none; } }
+</style>
+
+<canvas id="glitter" aria-hidden="true"></canvas>
+<canvas id="burst" aria-hidden="true"></canvas>
+<div class="lace">
+  <div class="card">
+    <header>
+      <h1>Glimmer Parlor</h1>
+      <div class="divider">♡</div>
+      <p class="tag">Four sparkly word games. Pick one and play.</p>
+    </header>
+    <nav class="games" aria-label="Games">
+      <a class="game" href="https://claude.ai/artifact/CQ8Mqe8zhzyXx34i8h1dBs" target="_blank" rel="noopener">
+        <div class="preview" aria-hidden="true"><div class="pv-meter"><b>78%</b><div class="bar"><i></i></div></div></div>
+        <span class="kind">Guess by meaning</span>
+        <h2>Glimmer</h2>
+        <p>Guess the secret word. Each guess shows how close its meaning is, as a glittering percentage.</p>
+        <span class="play cta">Play</span>
+      </a>
+      <a class="game" href="https://claude.ai/artifact/3MdySGsjHmbPfNsNxR9fHj" target="_blank" rel="noopener">
+        <div class="preview" aria-hidden="true"><div class="pv-tiles"><span class="g">p</span><span class="n">a</span><span class="p">r</span><span class="g">l</span><span class="n">s</span></div></div>
+        <span class="kind">Five letters, six tries</span>
+        <h2>Five Carat</h2>
+        <p>Crack the hidden five-letter word. Gold means right spot, pink means wrong spot.</p>
+        <span class="play cta">Play</span>
+      </a>
+      <a class="game" href="https://claude.ai/artifact/7eyqAPWgjqXiJVbDTuKaNa" target="_blank" rel="noopener">
+        <div class="preview" aria-hidden="true"><div class="pv-grid"><span>t</span><span>o</span><span>e</span><span>r</span><span>a</span><span>i</span><span>p</span><span>r</span><span>u</span><span>b</span><span>y</span><span>k</span><span>l</span><span>e</span><span>m</span><span>s</span><span>a</span><span>n</span><span>o</span><span>e</span><span>a</span><span>d</span><span>i</span><span>c</span><span>t</span><span>r</span><span>q</span><span>r</span></div></div>
+        <span class="kind">Word search</span>
+        <h2>Sequin Search</h2>
+        <p>Find ten hidden words in a themed grid, from the jewelry box to the pastry shop.</p>
+        <span class="play cta">Play</span>
+      </a>
+      <a class="game" href="https://claude.ai/artifact/LdfiGQ3huma9EjjYk9P2nr" target="_blank" rel="noopener">
+        <div class="preview" aria-hidden="true"><div class="pv-cards"><span>Tulle</span><span class="g">♛ Fabrics</span><span>Satin</span></div></div>
+        <span class="kind">Word solitaire</span>
+        <h2>Boutique Solitaire</h2>
+        <p>Sort word cards by category. Crown a stand, then file its five words to win.</p>
+        <span class="play cta">Play</span>
+      </a>
+    </nav>
+    <p class="foot">Each game opens in a new tab.</p>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const root = document.documentElement;
+
+/* ---------- Glitter texture for text, meter, buttons ---------- */
+(function glitterTexture() {
+  try {
+    const c = document.createElement("canvas"); c.width = c.height = 160;
+    const g = c.getContext("2d");
+    for (let i = 0; i < 900; i++) {
+      const x = Math.random() * 160, y = Math.random() * 160, r = Math.random() * 1.3 + .3;
+      const pal = ["rgba(255,255,255,.95)", "rgba(255,255,255,.6)", "rgba(255,241,194,.9)", "rgba(255,190,225,.8)", "rgba(122,31,92,.25)"];
+      g.fillStyle = pal[Math.floor(Math.random() * pal.length)];
+      g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
+    }
+    root.style.setProperty("--glitter", `url(${c.toDataURL()})`);
+  } catch {}
+})();
+
+/* ---------- Sequin field + starburst glints + sparkle bursts ---------- */
+const field = $("glitter"), fctx = field.getContext("2d");
+const burst = $("burst"), bctx = burst.getContext("2d");
+let seqs = [], glints = [], parts = [], dpr = 1, sprites = [];
+const GAP = 14, SR = 5.6;
+// Sequin sprites from deep pink (level 0) to bright white (level 5)
+const SPARK_SHADES = [
+  ["#d81b78", "#b5145f"], ["#e5358b", "#bd176a"], ["#f165a6", "#c81d73"],
+  ["#f99acb", "#d42a80"], ["#ffd2ea", "#e23d90"], ["#ffffff", "#f070b0"]
+];
+const SPR = 16; // sprite half-size in CSS px (sparks can reach past their grid cell)
+function sparkPath(g, cx, cy, R, w) { // skinny four-point spark
+  g.beginPath();
+  g.moveTo(cx, cy - R); g.lineTo(cx + w, cy - w); g.lineTo(cx + R * .8, cy); g.lineTo(cx + w, cy + w);
+  g.lineTo(cx, cy + R); g.lineTo(cx - w, cy + w); g.lineTo(cx - R * .8, cy); g.lineTo(cx - w, cy - w);
+  g.closePath();
+}
+function makeSprites() {
+  sprites = SPARK_SHADES.map(([face], i) => {
+    const c = document.createElement("canvas"); const S = Math.ceil(SPR * 2 * dpr);
+    c.width = c.height = S; const g = c.getContext("2d"); g.scale(dpr, dpr);
+    const m = SPR, R = SR * (0.9 + i * .22), w = Math.max(.7, R * .13);
+    if (i >= 4) { // bright sparks get a soft halo
+      const halo = g.createRadialGradient(m, m, 0, m, m, R * .7);
+      halo.addColorStop(0, "rgba(255,255,255,.75)"); halo.addColorStop(1, "rgba(255,210,235,0)");
+      g.fillStyle = halo; g.beginPath(); g.arc(m, m, R * .7, 0, 6.283); g.fill();
+    }
+    g.fillStyle = face; sparkPath(g, m, m, R, w); g.fill();
+    if (i >= 3) { g.fillStyle = "#fff"; g.beginPath(); g.arc(m, m, w * .9, 0, 6.283); g.fill(); }
+    return c;
+  });
+}
+function size() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  for (const c of [field, burst]) { c.width = innerWidth * dpr; c.height = innerHeight * dpr; }
+  makeSprites();
+  seqs = [];
+  for (let y = GAP / 2, row = 0; y < innerHeight + GAP; y += GAP * .87, row++)
+    for (let x = (row % 2 ? GAP : GAP / 2); x < innerWidth + GAP; x += GAP)
+      seqs.push({ x: x + (Math.random() - .5) * 4, y: y + (Math.random() - .5) * 4, j: Math.random(), ph: Math.random() * 6.28, k: .55 + Math.random() * .75 });
+  glints = [];
+}
+function shine(x, y, s) { // smooth drifting patches of light, like light catching sequins
+  return Math.sin(x * .011 + s * .35) + Math.sin(y * .015 - s * .27) + Math.sin((x - y) * .008 + s * .2) + Math.sin((x + y) * .006 - s * .15);
+}
+function starburst(ctx, x, y, r, a) {
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y);
+  const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, r * .22);
+  glow.addColorStop(0, "rgba(255,255,255,1)"); glow.addColorStop(.3, "rgba(255,240,250,.7)"); glow.addColorStop(1, "rgba(255,200,230,0)");
+  ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(0, 0, r * .22, 0, 6.283); ctx.fill();
+  ctx.fillStyle = "#fff";
+  // Long skinny cross, shorter skinny diagonals: a sharp, needle-like spark
+  const rays = [[0, 1], [Math.PI / 2, .8], [Math.PI / 4, .38], [-Math.PI / 4, .38]];
+  for (const [ang, len] of rays) {
+    ctx.save(); ctx.rotate(ang);
+    const L = r * len, w = Math.max(.45, r * .016);
+    ctx.beginPath(); ctx.moveTo(-L, 0); ctx.lineTo(0, -w); ctx.lineTo(L, 0); ctx.lineTo(0, w); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+function star(ctx, x, y, r, color, a) {
+  ctx.globalAlpha = a; ctx.fillStyle = color; ctx.beginPath();
+  ctx.moveTo(x, y - r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.quadraticCurveTo(x, y, x, y + r);
+  ctx.quadraticCurveTo(x, y, x - r, y); ctx.quadraticCurveTo(x, y, x, y - r); ctx.fill();
+}
+let lastSeq = -1;
+function frame(t) {
+  const s = t / 1000;
+  if (REDUCED || t - lastSeq > 60) { // sequins at ~16fps is plenty and keeps it light
+    lastSeq = t;
+    fctx.setTransform(1, 0, 0, 1, 0, 0);
+    fctx.fillStyle = "#c9156d"; fctx.fillRect(0, 0, field.width, field.height);
+    for (const q of seqs) {
+      let v = shine(q.x, q.y, s) + (q.j - .5) * 2.2 + Math.sin(s * 2 + q.ph) * .35;
+      const lvl = v > 2.2 ? 5 : v > 1.6 ? 4 : v > 1.0 ? 3 : v > 0 ? 2 : v > -1.2 ? 1 : 0;
+      const half = SPR * q.k * dpr;
+      fctx.drawImage(sprites[lvl], q.x * dpr - half, q.y * dpr - half, half * 2, half * 2);
+    }
+    fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Mostly small sparks with the occasional big one
+    const sparkSize = () => { const k = Math.random(); return k < .55 ? 8 + Math.random() * 14 : k < .88 ? 24 + Math.random() * 26 : 60 + Math.random() * 50; };
+    if (!REDUCED && glints.length < Math.min(26, innerWidth * innerHeight / 35000) && Math.random() < .4) {
+      glints.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: sparkSize(), born: s, life: 1 + Math.random() * 2 });
+    }
+    if (REDUCED && !glints.length) for (let i = 0; i < 16; i++) glints.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: sparkSize(), born: s, life: 1e9 });
+    glints = glints.filter(g => s - g.born < g.life);
+    for (const g of glints) {
+      const k = REDUCED ? .5 : (s - g.born) / g.life, a = Math.sin(k * Math.PI);
+      starburst(fctx, g.x, g.y, g.r * (.5 + .5 * a), a);
+    }
+    fctx.globalAlpha = 1;
+  }
+  bctx.setTransform(dpr, 0, 0, dpr, 0, 0); bctx.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.life > 0);
+  for (const p of parts) {
+    if (p.kind === "ring") {
+      p.life--; p.r += p.vr; p.vr *= .93;
+      bctx.globalAlpha = Math.max(0, p.life / p.max) * .9; bctx.strokeStyle = p.c; bctx.lineWidth = p.w;
+      bctx.beginPath(); bctx.arc(p.x, p.y, p.r, 0, 6.283); bctx.stroke();
+      continue;
+    }
+    p.x += p.vx; p.y += p.vy; p.vy += .06; p.vx *= .985; p.life--; p.rot += .15;
+    if (p.kind === "star") star(bctx, p.x, p.y, p.r * (.6 + .4 * Math.sin(p.rot)), p.c, Math.min(1, p.life / 30));
+    else { bctx.globalAlpha = Math.min(1, p.life / 30); bctx.fillStyle = p.c; bctx.beginPath(); bctx.arc(p.x, p.y, p.r * .4, 0, 6.283); bctx.fill(); }
+  }
+  bctx.globalAlpha = 1;
+  if (!REDUCED) requestAnimationFrame(frame);
+}
+addEventListener("resize", () => { if (REDUCED) requestAnimationFrame(frame); });
+function sparkleAt(el, count) {
+  if (REDUCED || !el) return;
+  const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const colors = ["#ff6fb5", "#e6338a", "#fff1c2", "#e9b949", "#ffffff", "#b7a6ff"];
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * 6.28, v = 1.5 + Math.random() * 6;
+    parts.push({ x: cx + (Math.random() - .5) * r.width * .6, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2.5,
+      r: 3 + Math.random() * 6, c: colors[Math.floor(Math.random() * colors.length)], life: 50 + Math.random() * 50,
+      rot: Math.random() * 6, kind: Math.random() < .55 ? "star" : "dot" });
+  }
+}
+addEventListener("resize", size);
+size(); requestAnimationFrame(frame);
+
+
+/* ---------- Magic wand: sparks wherever you click or tap ---------- */
+function wandAt(x, y) {
+  if (REDUCED) return;
+  parts.push({ kind: "ring", x, y, r: 3, vr: 4.2, w: 2.2, life: 24, max: 24, c: "#ffffff" });
+  parts.push({ kind: "ring", x, y, r: 1, vr: 2.6, w: 1.4, life: 30, max: 30, c: "#ff9fcf" });
+  const colors = ["#ffffff", "#ffffff", "#fff1c2", "#e9b949", "#ff6fb5", "#ffb3d9", "#b7a6ff"];
+  for (let i = 0; i < 22; i++) {
+    const a = Math.random() * 6.283, v = 1.5 + Math.random() * 5;
+    parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 1.2, r: 2.5 + Math.random() * 5,
+      c: colors[Math.floor(Math.random() * colors.length)], life: 28 + Math.random() * 30, rot: Math.random() * 6, kind: Math.random() < .65 ? "star" : "dot" });
+  }
+  for (let i = 0; i < 7; i++) { // lingering glitter that drifts down like fairy dust
+    parts.push({ x: x + (Math.random() - .5) * 30, y: y + (Math.random() - .5) * 20, vx: (Math.random() - .5) * .8, vy: -1 - Math.random(),
+      r: 2 + Math.random() * 3, c: colors[Math.floor(Math.random() * colors.length)], life: 70 + Math.random() * 40, rot: Math.random() * 6, kind: "star" });
+  }
+}
+addEventListener("pointerdown", e => wandAt(e.clientX, e.clientY), { capture: true, passive: true });
+
+/* ---------- Difficulty picker: stars hanging from the ceiling ---------- */
+function starCeiling(mount, levels, current, onPick) {
+  const LENS = [26, 50, 36];
+  mount.className = "ceiling"; mount.setAttribute("role", "radiogroup"); mount.setAttribute("aria-label", "Difficulty");
+  const note = document.createElement("p"); note.className = "lvl-note"; note.setAttribute("aria-live", "polite");
+  mount.insertAdjacentElement("afterend", note);
+  let cur = current;
+  const btns = levels.map((lv, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "hang"; b.setAttribute("role", "radio");
+    b.style.setProperty("--len", LENS[i % LENS.length] + "px"); b.style.animationDelay = (-i * 1.4) + "s";
+    b.innerHTML = '<span class="string"></span><svg class="hstar" viewBox="0 0 40 40" aria-hidden="true"><path class="body" d="M20.0 4.5 L24.3 15.5 L36.2 16.2 L27.0 23.8 L30.0 35.3 L20.0 28.9 L10.0 35.3 L13.0 23.8 L3.8 16.2 L15.7 15.5 Z"/><path class="facet" d="M20 21.5 L20.0 4.5 M20 21.5 L36.2 16.2 M20 21.5 L30.0 35.3 M20 21.5 L10.0 35.3 M20 21.5 L3.8 16.2"/></svg><span class="name"></span><span class="pips"></span>';
+    b.querySelector(".name").textContent = lv.name;
+    b.querySelector(".pips").textContent = "\u2605".repeat(i + 1);
+    b.setAttribute("aria-label", lv.name + ": " + lv.note);
+    b.onclick = () => {
+      b.classList.remove("tug"); void b.offsetWidth; b.classList.add("tug");
+      if (lv.id === cur) return;
+      cur = lv.id; update(); onPick(lv.id);
+    };
+    mount.append(b); return b;
+  });
+  function update() {
+    btns.forEach((b, i) => { const on = levels[i].id === cur; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false"); });
+    const lv = levels.find(l => l.id === cur); note.textContent = lv ? lv.note : "";
+  }
+  update();
+  return { set(id) { cur = id; update(); } };
+}
+function loadLevel(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } }
+function saveLevel(key, id) { try { localStorage.setItem(key, id); } catch {} }
+
+</script>
+
+</body></html>
